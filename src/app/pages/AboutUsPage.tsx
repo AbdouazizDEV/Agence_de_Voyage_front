@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Header } from '@common/components/layout/Header'
 import { Footer } from '@common/components/layout/Footer'
 import { Card, CardContent } from '@common/components/ui/Card'
@@ -51,57 +52,58 @@ const useIntersectionObserver = (
 }
 
 /**
- * Témoignages clients
+ * Témoignages clients - Les textes seront traduits dynamiquement
  */
-const testimonials = [
+const getTestimonials = (t: (key: string) => string) => [
   {
     id: 1,
     name: 'Sophie Martin',
-    role: 'Voyageuse',
+    role: t('pages:about.testimonial1Role'),
     image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80',
-    text: 'Une expérience incroyable ! L\'équipe a créé un voyage sur mesure qui a dépassé toutes mes attentes. Je recommande vivement.',
+    text: t('pages:about.testimonial1Text'),
     rating: 5,
   },
   {
     id: 2,
     name: 'Jean Dupont',
-    role: 'Entrepreneur',
+    role: t('pages:about.testimonial2Role'),
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80',
-    text: 'Service professionnel et attentionné. Mon voyage d\'affaires a été parfaitement organisé. Merci pour votre excellence !',
+    text: t('pages:about.testimonial2Text'),
     rating: 5,
   },
   {
     id: 3,
     name: 'Marie Dubois',
-    role: 'Photographe',
+    role: t('pages:about.testimonial3Role'),
     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&q=80',
-    text: 'Des destinations magnifiques et une organisation impeccable. J\'ai pu me concentrer sur ma passion pendant que vous gérez tout.',
+    text: t('pages:about.testimonial3Text'),
     rating: 5,
   },
   {
     id: 4,
     name: 'Pierre Leroy',
-    role: 'Famille',
+    role: t('pages:about.testimonial4Role'),
     image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&q=80',
-    text: 'Notre voyage en famille était parfait. Les enfants ont adoré et nous avons créé des souvenirs inoubliables. Merci !',
+    text: t('pages:about.testimonial4Text'),
     rating: 5,
   },
 ]
 
 /**
- * Statistiques
+ * Statistiques - Les labels seront traduits dynamiquement
  */
-const stats = [
-  { number: '50K+', label: 'Clients Satisfaits', icon: Users },
-  { number: '200+', label: 'Destinations', icon: Globe },
-  { number: '15+', label: 'Années d\'Expérience', icon: Award },
-  { number: '98%', label: 'Taux de Satisfaction', icon: Heart },
+const getStats = (t: (key: string) => string) => [
+  { number: '50K+', label: t('pages:about.statsClients'), icon: Users },
+  { number: '200+', label: t('pages:about.statsDestinations'), icon: Globe },
+  { number: '15+', label: t('pages:about.statsExperience'), icon: Award },
+  { number: '98%', label: t('pages:about.statsSatisfaction'), icon: Heart },
 ]
 
 /**
  * Page À propos de nous - Version améliorée avec animations
  */
 export const AboutUsPage = () => {
+  const { t } = useTranslation()
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
   const sectionRefs = {
@@ -118,6 +120,9 @@ export const AboutUsPage = () => {
   const isTestimonialsVisible = useIntersectionObserver(sectionRefs.testimonials)
   const isMissionVisible = useIntersectionObserver(sectionRefs.mission)
 
+  const testimonials = getTestimonials(t)
+  const stats = getStats(t)
+
   // Auto-play carousel
   useEffect(() => {
     if (!isAutoPlaying) return
@@ -127,7 +132,7 @@ export const AboutUsPage = () => {
     }, 5000)
 
     return () => clearInterval(interval)
-  }, [isAutoPlaying])
+  }, [isAutoPlaying, testimonials.length])
 
   const nextTestimonial = () => {
     setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
@@ -142,30 +147,26 @@ export const AboutUsPage = () => {
   const features = [
     {
       icon: Plane,
-      title: 'Voyages Personnalisés',
-      description:
-        'Nous créons des expériences de voyage sur mesure adaptées à vos préférences et à votre budget.',
+      title: t('pages:about.feature1Title'),
+      description: t('pages:about.feature1Description'),
       color: 'from-blue-500 to-blue-600',
     },
     {
       icon: Users,
-      title: 'Équipe Experte',
-      description:
-        'Notre équipe de conseillers en voyage expérimentés est là pour vous guider à chaque étape.',
+      title: t('pages:about.feature2Title'),
+      description: t('pages:about.feature2Description'),
       color: 'from-purple-500 to-purple-600',
     },
     {
       icon: Award,
-      title: 'Qualité Garantie',
-      description:
-        'Nous sélectionnons uniquement les meilleurs partenaires et destinations pour garantir votre satisfaction.',
+      title: t('pages:about.feature3Title'),
+      description: t('pages:about.feature3Description'),
       color: 'from-orange-500 to-orange-600',
     },
     {
       icon: Heart,
-      title: 'Service Client 24/7',
-      description:
-        'Notre support client est disponible 24h/24 et 7j/7 pour répondre à toutes vos questions.',
+      title: t('pages:about.feature4Title'),
+      description: t('pages:about.feature4Description'),
       color: 'from-pink-500 to-pink-600',
     },
   ]
@@ -186,10 +187,10 @@ export const AboutUsPage = () => {
                 <Sparkles className="h-16 w-16 text-yellow-300 animate-bounce" />
               </div>
               <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-slide-up">
-                À Propos de Nous
+                {t('pages:about.heroTitle')}
               </h1>
               <p className="text-xl md:text-2xl text-primary-100 max-w-3xl mx-auto animate-slide-up delay-200">
-                Votre partenaire de confiance pour créer des souvenirs inoubliables
+                {t('pages:about.heroSubtitle')}
               </p>
             </div>
           </div>
@@ -250,27 +251,18 @@ export const AboutUsPage = () => {
                   <div className="flex items-center gap-3 mb-6">
                     <div className="h-1 w-20 bg-gradient-to-r from-primary-600 to-primary-400 rounded-full" />
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-                      Notre Histoire
+                      {t('pages:about.storyTitle')}
                     </h2>
                   </div>
                   <div className="space-y-6 text-gray-700 leading-relaxed text-lg">
                     <p className="animate-fade-in">
-                      Fondée avec une passion pour le voyage et l'aventure, TravelAgency
-                      est née de la vision de rendre les voyages accessibles et
-                      mémorables pour tous. Depuis nos débuts, nous nous engageons à
-                      offrir des expériences de voyage exceptionnelles qui dépassent les
-                      attentes de nos clients.
+                      {t('pages:about.storyParagraph1')}
                     </p>
                     <p className="animate-fade-in delay-300">
-                      Notre équipe de professionnels du voyage travaille sans relâche pour
-                      sélectionner les meilleures destinations, négocier les meilleurs
-                      prix et créer des itinéraires personnalisés qui correspondent
-                      parfaitement à vos rêves de voyage.
+                      {t('pages:about.storyParagraph2')}
                     </p>
                     <p className="animate-fade-in delay-500">
-                      Que vous recherchiez une escapade romantique, une aventure
-                      familiale ou un voyage d'affaires, nous sommes là pour transformer
-                      vos rêves en réalité.
+                      {t('pages:about.storyParagraph3')}
                     </p>
                   </div>
                 </CardContent>
@@ -287,10 +279,10 @@ export const AboutUsPage = () => {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Pourquoi Nous Choisir ?
+                {t('pages:about.whyChooseUs')}
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Découvrez ce qui nous rend uniques
+                {t('pages:about.whyChooseUsSubtitle')}
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -338,10 +330,10 @@ export const AboutUsPage = () => {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Ce Que Disent Nos Clients
+                {t('pages:about.testimonialsTitle')}
               </h2>
               <p className="text-xl text-gray-600">
-                Des témoignages authentiques de voyageurs satisfaits
+                {t('pages:about.testimonialsSubtitle')}
               </p>
             </div>
 
@@ -453,13 +445,10 @@ export const AboutUsPage = () => {
                       <Shield className="h-8 w-8 text-blue-600" />
                     </div>
                     <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                      Notre Mission
+                      {t('pages:about.missionTitle')}
                     </h3>
                     <p className="text-gray-700 leading-relaxed text-lg">
-                      Rendre le voyage accessible à tous en offrant des expériences
-                      authentiques, des prix compétitifs et un service client
-                      exceptionnel. Nous croyons que chaque voyage devrait être une
-                      aventure unique et mémorable.
+                      {t('pages:about.missionDescription')}
                     </p>
                   </div>
                 </CardContent>
@@ -481,13 +470,10 @@ export const AboutUsPage = () => {
                       <Globe className="h-8 w-8 text-purple-600" />
                     </div>
                     <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                      Notre Vision
+                      {t('pages:about.visionTitle')}
                     </h3>
                     <p className="text-gray-700 leading-relaxed text-lg">
-                      Devenir la référence mondiale en matière de voyages personnalisés,
-                      en créant des connexions significatives entre les voyageurs et les
-                      destinations, tout en respectant l'environnement et les communautés
-                      locales.
+                      {t('pages:about.visionDescription')}
                     </p>
                   </div>
                 </CardContent>
