@@ -9,6 +9,9 @@ import { HomePage } from './pages/HomePage'
 import { OffersPage } from './pages/OffersPage'
 import { OfferDetailsPage } from './pages/OfferDetailsPage'
 import { LoginPage } from './pages/LoginPage'
+import { DestinationsPage } from './pages/DestinationsPage'
+import { AboutUsPage } from './pages/AboutUsPage'
+import { ContactUsPage } from './pages/ContactUsPage'
 
 // Pages (à créer progressivement)
 const ClientDashboard = () => <div className="p-8"><h1 className="text-2xl font-bold">Dashboard Client</h1></div>
@@ -26,6 +29,9 @@ function App() {
           <Route path={routes.home} element={<HomePage />} />
           <Route path={routes.offers} element={<OffersPage />} />
           <Route path="/offers/:id" element={<OfferDetailsPage />} />
+          <Route path="/destinations" element={<DestinationsPage />} />
+          <Route path="/about" element={<AboutUsPage />} />
+          <Route path="/contact" element={<ContactUsPage />} />
           <Route path={routes.login} element={<LoginPage />} />
           <Route path="/admin/login" element={<LoginPage />} />
           <Route path={routes.register} element={<RegisterForm />} />
