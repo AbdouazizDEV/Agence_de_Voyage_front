@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'sonner'
+import '@common/i18n/config' // Initialise i18next
 import { QueryProvider } from '@core/providers/QueryProvider'
 import { ProtectedRoute } from '@core/guards/ProtectedRoute'
 import { AdminRoute } from '@core/guards/AdminRoute'

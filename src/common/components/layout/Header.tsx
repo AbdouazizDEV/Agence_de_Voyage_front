@@ -1,6 +1,8 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { Plane } from 'lucide-react'
+ import { Link, useNavigate } from 'react-router-dom'
+import { Plane, Globe } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@common/components/ui/Button'
+import { Select } from '@common/components/ui/Select'
 import { routes } from '@config/routes.config'
 import { cn } from '@common/utils/cn'
 
@@ -13,6 +15,16 @@ interface HeaderProps {
  */
 export const Header = ({ className }: HeaderProps) => {
   const navigate = useNavigate()
+  const { i18n, t } = useTranslation()
+
+  const languageOptions = [
+    { value: 'fr', label: '🇫🇷 FR' },
+    { value: 'en', label: '🇬🇧 EN' },
+  ]
+
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    i18n.changeLanguage(e.target.value)
+  }
 
   return (
     <header className={cn('bg-white border-b-4 border-primary-600', className)}>
@@ -30,38 +42,48 @@ export const Header = ({ className }: HeaderProps) => {
               to={routes.offers}
               className="text-gray-700 hover:text-primary-600 transition-colors"
             >
-              Offers
+              {t('nav:offers')}
             </Link>
             <Link
               to="/destinations"
               className="text-gray-700 hover:text-primary-600 transition-colors"
             >
-              Destinations
+              {t('nav:destinations')}
             </Link>
             <Link
               to="/about"
               className="text-gray-700 hover:text-primary-600 transition-colors"
             >
-              About Us
+              {t('nav:about')}
             </Link>
             <Link
               to="/contact"
               className="text-gray-700 hover:text-primary-600 transition-colors"
             >
-              Contact
+              {t('nav:contact')}
             </Link>
           </nav>
 
-          {/* Boutons Connexion et Contact */}
+          {/* Sélecteur de langue et Boutons */}
           <div className="hidden md:flex items-center gap-3">
+            {/* Sélecteur de langue */}
+            <div className="flex items-center gap-2">
+              <Globe className="h-4 w-4 text-gray-600" />
+              <Select
+                options={languageOptions}
+                value={i18n.language}
+                onChange={handleLanguageChange}
+                className="w-24"
+              />
+            </div>
             <Button
               variant="outline"
               onClick={() => navigate(routes.login)}
             >
-              Connexion
+              {t('nav:login')}
             </Button>
             <Button variant="primary">
-              Contact Us
+              {t('nav:contactUs')}
             </Button>
           </div>
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Home } from 'lucide-react'
 import { Header } from '@common/components/layout/Header'
@@ -7,81 +7,13 @@ import { FiltersSidebar } from '@features/offers/components/FiltersSidebar'
 import { OfferSearchCard } from '@features/offers/components/OfferSearchCard'
 import { Pagination } from '@common/components/ui/Pagination'
 import { Select } from '@common/components/ui/Select'
-import { OfferFilters, OfferSearchResult, SortOption } from '@features/offers/types/offers.types'
+import { Loading } from '@common/components/feedback/Loading'
+import { Error } from '@common/components/feedback/Error'
+import { Empty } from '@common/components/feedback/Empty'
+import { useOffers } from '@features/offers/hooks/useOffers'
+import { OfferFilters, SortOption, SortOrder } from '@features/offers/types/offers.types'
 import { routes } from '@config/routes.config'
 import { toast } from 'sonner'
-
-/**
- * Données mockées pour les résultats de recherche
- */
-const mockOffers: OfferSearchResult[] = [
-  {
-    id: '1',
-    title: 'Maldives Overwater Bungalow',
-    destination: 'Maldives',
-    price: 1999,
-    currency: 'USD',
-    duration: 7,
-    nights: 6,
-    image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e4f2?w=800&q=80',
-    category: 'beach',
-  },
-  {
-    id: '2',
-    title: 'Santorini Cliffside Villa',
-    destination: 'Santorini, Greece',
-    price: 2499,
-    currency: 'USD',
-    duration: 10,
-    nights: 9,
-    image: 'https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=800&q=80',
-    category: 'beach',
-  },
-  {
-    id: '3',
-    title: 'Bali Jungle Retreat',
-    destination: 'Bali, Indonesia',
-    price: 1800,
-    currency: 'USD',
-    duration: 8,
-    nights: 7,
-    image: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=800&q=80',
-    category: 'beach',
-  },
-  {
-    id: '4',
-    title: 'Caribbean Cruise Getaway',
-    destination: 'Caribbean',
-    price: 1250,
-    currency: 'USD',
-    duration: 7,
-    nights: 6,
-    image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80',
-    category: 'beach',
-  },
-  {
-    id: '5',
-    title: 'Thailand Island Hopping',
-    destination: 'Thailand',
-    price: 1600,
-    currency: 'USD',
-    duration: 9,
-    nights: 8,
-    image: 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=800&q=80',
-    category: 'adventure',
-  },
-  {
-    id: '6',
-    title: 'Cancun All-Inclusive',
-    destination: 'Cancun, Mexico',
-    price: 1450,
-    currency: 'USD',
-    duration: 5,
-    nights: 4,
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80',
-    category: 'beach',
-  },
-]
 
 /**
  * Page des offres / résultats de recherche
@@ -89,84 +21,58 @@ const mockOffers: OfferSearchResult[] = [
 export const OffersPage = () => {
   const location = useLocation()
   const navigate = useNavigate()
-  
+
   // Récupérer les paramètres de recherche depuis l'état de navigation
+  const searchRequest = (location.state as any)?.searchRequest
   const searchParams = (location.state as any)?.search || {}
   const categoryParam = (location.state as any)?.category || ''
 
-  const [filters, setFilters] = useState<OfferFilters>({
-    priceRange: { min: 500, max: 5000 },
-    duration: categoryParam === 'beach' ? ['7'] : [],
-    categories: categoryParam ? [categoryParam] : [],
-  })
+  const [filters, setFilters] = useState<OfferFilters>(
+    searchRequest || {
+      search: searchParams.destination || searchParams.search,
+      destination: searchParams.destination,
+      category: categoryParam || undefined,
+    }
+  )
 
-  const [sortBy, setSortBy] = useState<SortOption>('popularity')
+  const [sortBy, setSortBy] = useState<SortOption>('createdAt')
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
   const [currentPage, setCurrentPage] = useState(1)
-  const [results, setResults] = useState<OfferSearchResult[]>(mockOffers)
-  const [totalResults, setTotalResults] = useState(24)
-  const itemsPerPage = 6
-  const totalPages = Math.ceil(totalResults / itemsPerPage)
+  const itemsPerPage = 12
 
-  // Filtrer les résultats selon les filtres
-  useEffect(() => {
-    let filtered = [...mockOffers]
+  // Construire les paramètres de recherche pour l'API
+  const apiParams = {
+    ...filters,
+    page: currentPage,
+    limit: itemsPerPage,
+    sortBy,
+    sortOrder,
+  }
 
-    // Filtrer par catégorie
-    if (filters.categories.length > 0) {
-      filtered = filtered.filter((offer) =>
-        filters.categories.includes(offer.category || '')
-      )
-    }
-
-    // Filtrer par prix
-    filtered = filtered.filter(
-      (offer) =>
-        offer.price >= filters.priceRange.min &&
-        offer.price <= filters.priceRange.max
-    )
-
-    // Filtrer par durée
-    if (filters.duration.length > 0) {
-      filtered = filtered.filter((offer) => {
-        return filters.duration.some((d) => {
-          if (d === '3-5') return offer.duration >= 3 && offer.duration <= 5
-          if (d === '7') return offer.duration === 7
-          if (d === '14+') return offer.duration >= 14
-          return false
-        })
-      })
-    }
-
-    // Trier
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'price-asc':
-          return a.price - b.price
-        case 'price-desc':
-          return b.price - a.price
-        case 'duration-asc':
-          return a.duration - b.duration
-        case 'duration-desc':
-          return b.duration - a.duration
-        default:
-          return 0
-      }
-    })
-
-    setResults(filtered)
-    setTotalResults(filtered.length)
-  }, [filters, sortBy])
+  // Récupérer les offres depuis l'API
+  const { data, isLoading, error, refetch } = useOffers(apiParams)
 
   const handleApplyFilters = () => {
     setCurrentPage(1)
+    refetch()
     toast.success('Filtres appliqués')
   }
 
   const handleClearFilters = () => {
     setFilters({
-      priceRange: { min: 500, max: 5000 },
-      duration: [],
-      categories: [],
+      search: undefined,
+      destination: undefined,
+      category: undefined,
+      minPrice: undefined,
+      maxPrice: undefined,
+      minDuration: undefined,
+      maxDuration: undefined,
+      minRating: undefined,
+      difficulty: undefined,
+      travelers: undefined,
+      departureDate: undefined,
+      returnDate: undefined,
+      isPromotion: undefined,
     })
     setCurrentPage(1)
     toast.info('Filtres réinitialisés')
@@ -177,32 +83,32 @@ export const OffersPage = () => {
   }
 
   const handleWhatsApp = (offerId: string) => {
-    const offer = results.find((o) => o.id === offerId)
+    const offer = data?.data.find((o) => o.id === offerId)
     if (offer) {
       const message = `I'm interested in ${offer.title}`
       window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank')
     }
   }
 
-  // Pagination
-  const paginatedResults = results.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  )
-
   const sortOptions = [
-    { value: 'popularity', label: 'Popularity' },
-    { value: 'price-asc', label: 'Price: Low to High' },
-    { value: 'price-desc', label: 'Price: High to Low' },
-    { value: 'duration-asc', label: 'Duration: Shortest' },
-    { value: 'duration-desc', label: 'Duration: Longest' },
+    { value: 'price', label: 'Price' },
+    { value: 'duration', label: 'Duration' },
+    { value: 'rating', label: 'Rating' },
+    { value: 'createdAt', label: 'Newest' },
+    { value: 'bookings', label: 'Most Booked' },
+    { value: 'views', label: 'Most Viewed' },
+  ]
+
+  const sortOrderOptions = [
+    { value: 'asc', label: 'Ascending' },
+    { value: 'desc', label: 'Descending' },
   ]
 
   // Déterminer le titre de la page
   const pageTitle = searchParams.destination
     ? `Search: ${searchParams.destination}`
-    : filters.categories.length > 0
-    ? `${filters.categories[0].charAt(0).toUpperCase() + filters.categories[0].slice(1)} Holidays`
+    : filters.category
+    ? `${filters.category}`
     : 'All Offers'
 
   return (
@@ -211,10 +117,13 @@ export const OffersPage = () => {
       <main className="flex-grow container mx-auto px-4 py-8">
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-          <a href={routes.home} className="hover:text-primary-600 flex items-center gap-1">
+          <button
+            onClick={() => navigate(routes.home)}
+            className="hover:text-primary-600 flex items-center gap-1"
+          >
             <Home className="h-4 w-4" />
             Home
-          </a>
+          </button>
           <span>/</span>
           <span>Search</span>
           {pageTitle !== 'All Offers' && (
@@ -239,46 +148,70 @@ export const OffersPage = () => {
           {/* Main Content */}
           <div className="flex-1">
             {/* Header avec résultats et tri */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
               <h1 className="text-3xl font-bold text-gray-900">
-                Showing {totalResults} results
+                {isLoading
+                  ? 'Chargement...'
+                  : `Showing ${data?.pagination.total || 0} results`}
               </h1>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Sort by:</span>
                 <Select
                   options={sortOptions}
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as SortOption)}
-                  className="w-48"
+                  className="w-40"
+                />
+                <Select
+                  options={sortOrderOptions}
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value as SortOrder)}
+                  className="w-32"
                 />
               </div>
             </div>
 
-            {/* Grille de résultats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {paginatedResults.length > 0 ? (
-                paginatedResults.map((offer) => (
-                  <OfferSearchCard
-                    key={offer.id}
-                    offer={offer}
-                    onViewDetails={handleViewDetails}
-                    onWhatsApp={handleWhatsApp}
-                  />
-                ))
-              ) : (
-                <div className="col-span-full text-center py-12">
-                  <p className="text-gray-600">Aucun résultat trouvé</p>
-                </div>
-              )}
-            </div>
+            {/* Loading State */}
+            {isLoading && (
+              <Loading message="Chargement des offres..." />
+            )}
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
+            {/* Error State */}
+            {error && (
+              <Error
+                message="Erreur lors du chargement des offres"
+                onRetry={() => refetch()}
               />
+            )}
+
+            {/* Results Grid */}
+            {!isLoading && !error && (
+              <>
+                {data && data.data.length > 0 ? (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                      {data.data.map((offer) => (
+                        <OfferSearchCard
+                          key={offer.id}
+                          offer={offer}
+                          onViewDetails={handleViewDetails}
+                          onWhatsApp={handleWhatsApp}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Pagination */}
+                    {data.pagination.totalPages > 1 && (
+                      <Pagination
+                        currentPage={data.pagination.page}
+                        totalPages={data.pagination.totalPages}
+                        onPageChange={setCurrentPage}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <Empty message="Aucune offre trouvée avec ces critères" />
+                )}
+              </>
             )}
           </div>
         </div>
@@ -287,4 +220,3 @@ export const OffersPage = () => {
     </div>
   )
 }
-
