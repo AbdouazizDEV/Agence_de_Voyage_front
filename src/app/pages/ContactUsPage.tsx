@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useTranslation } from 'react-i18next'
 import { Header } from '@common/components/layout/Header'
 import { Footer } from '@common/components/layout/Footer'
 import { Button } from '@common/components/ui/Button'
@@ -10,20 +11,22 @@ import { Mail, Phone, MapPin, MessageCircle, Send } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@common/utils/cn'
 
-const contactSchema = z.object({
-  name: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
-  email: z.string().email('Email invalide'),
-  phone: z.string().optional(),
-  subject: z.string().min(3, 'Le sujet doit contenir au moins 3 caractères'),
-  message: z.string().min(10, 'Le message doit contenir au moins 10 caractères'),
-})
-
-type ContactFormData = z.infer<typeof contactSchema>
-
 /**
  * Page Contact Us
  */
 export const ContactUsPage = () => {
+  const { t } = useTranslation()
+
+  const contactSchema = z.object({
+    name: z.string().min(2, t('pages:contact.validationName')),
+    email: z.string().email(t('pages:contact.validationEmail')),
+    phone: z.string().optional(),
+    subject: z.string().min(3, t('pages:contact.validationSubject')),
+    message: z.string().min(10, t('pages:contact.validationMessage')),
+  })
+
+  type ContactFormData = z.infer<typeof contactSchema>
+
   const {
     register,
     handleSubmit,
@@ -36,30 +39,30 @@ export const ContactUsPage = () => {
   const onSubmit = (data: ContactFormData) => {
     // TODO: Implémenter l'envoi du formulaire
     console.log('Contact form data:', data)
-    toast.success('Message envoyé avec succès ! Nous vous répondrons bientôt.')
+    toast.success(t('pages:contact.successMessage'))
     reset()
   }
 
   const contactInfo = [
     {
       icon: MapPin,
-      title: 'Adresse',
-      content: '123 Travel Lane, Adventure City',
+      title: t('pages:contact.address'),
+      content: t('pages:contact.addressValue'),
     },
     {
       icon: Phone,
-      title: 'Téléphone',
-      content: '+1 (034) 567-890',
+      title: t('pages:contact.phone'),
+      content: t('pages:contact.phoneValue'),
     },
     {
       icon: Mail,
-      title: 'Email',
-      content: 'hello@travelagency.com',
+      title: t('pages:contact.email'),
+      content: t('pages:contact.emailValue'),
     },
     {
       icon: MessageCircle,
-      title: 'WhatsApp',
-      content: 'Chat with Us',
+      title: t('pages:contact.whatsapp'),
+      content: t('pages:contact.chatWithUs'),
       isLink: true,
     },
   ]
@@ -71,10 +74,11 @@ export const ContactUsPage = () => {
         {/* Hero Section */}
         <section className="bg-gradient-to-r from-primary-600 to-primary-700 text-white py-16">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Contactez-Nous</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              {t('pages:contact.heroTitle')}
+            </h1>
             <p className="text-xl text-primary-100 max-w-2xl mx-auto">
-              Nous sommes là pour répondre à toutes vos questions et vous aider à
-              planifier votre prochain voyage
+              {t('pages:contact.heroSubtitle')}
             </p>
           </div>
         </section>
@@ -88,7 +92,7 @@ export const ContactUsPage = () => {
                 <Card>
                   <CardContent className="p-6">
                     <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                      Informations de Contact
+                      {t('pages:contact.contactInfo')}
                     </h2>
                     <div className="space-y-6">
                       {contactInfo.map((info, index) => {
@@ -126,20 +130,20 @@ export const ContactUsPage = () => {
                 <Card>
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold text-gray-900 mb-4">
-                      Heures d'Ouverture
+                      {t('pages:contact.businessHours')}
                     </h3>
                     <div className="space-y-2 text-gray-700">
                       <div className="flex justify-between">
-                        <span>Lundi - Vendredi</span>
-                        <span className="font-medium">9h00 - 18h00</span>
+                        <span>{t('pages:contact.mondayFriday')}</span>
+                        <span className="font-medium">{t('pages:contact.hours1')}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Samedi</span>
-                        <span className="font-medium">10h00 - 16h00</span>
+                        <span>{t('pages:contact.saturday')}</span>
+                        <span className="font-medium">{t('pages:contact.hours2')}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Dimanche</span>
-                        <span className="font-medium">Fermé</span>
+                        <span>{t('pages:contact.sunday')}</span>
+                        <span className="font-medium">{t('pages:contact.closed')}</span>
                       </div>
                     </div>
                   </CardContent>
@@ -151,47 +155,47 @@ export const ContactUsPage = () => {
                 <Card>
                   <CardContent className="p-8">
                     <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                      Envoyez-nous un Message
+                      {t('pages:contact.sendMessage')}
                     </h2>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <Input
-                          label="Nom complet"
-                          placeholder="Votre nom"
+                          label={t('pages:contact.fullName')}
+                          placeholder={t('pages:contact.namePlaceholder')}
                           {...register('name')}
                           error={errors.name?.message}
                         />
                         <Input
-                          label="Email"
+                          label={t('pages:contact.email')}
                           type="email"
-                          placeholder="votre@email.com"
+                          placeholder={t('pages:contact.emailPlaceholder')}
                           {...register('email')}
                           error={errors.email?.message}
                         />
                       </div>
 
                       <Input
-                        label="Téléphone (optionnel)"
+                        label={t('pages:contact.phoneLabel')}
                         type="tel"
-                        placeholder="+33 6 12 34 56 78"
+                        placeholder={t('pages:contact.phonePlaceholder')}
                         {...register('phone')}
                         error={errors.phone?.message}
                       />
 
                       <Input
-                        label="Sujet"
-                        placeholder="Sujet de votre message"
+                        label={t('pages:contact.subject')}
+                        placeholder={t('pages:contact.subjectPlaceholder')}
                         {...register('subject')}
                         error={errors.subject?.message}
                       />
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Message
+                          {t('pages:contact.message')}
                         </label>
                         <textarea
                           rows={6}
-                          placeholder="Votre message..."
+                          placeholder={t('pages:contact.messagePlaceholder')}
                           {...register('message')}
                           className={cn(
                             'flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2',
@@ -211,7 +215,7 @@ export const ContactUsPage = () => {
                         className="w-full"
                       >
                         <Send className="h-4 w-4 mr-2" />
-                        Envoyer le Message
+                        {t('pages:contact.sendButton')}
                       </Button>
                     </form>
                   </CardContent>

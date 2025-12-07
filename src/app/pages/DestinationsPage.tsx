@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Header } from '@common/components/layout/Header'
 import { Footer } from '@common/components/layout/Footer'
 import { DestinationCard } from '@features/offers/components'
@@ -87,6 +88,7 @@ const allDestinations: Destination[] = [
  * Page des destinations
  */
 export const DestinationsPage = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   const handleDestinationClick = (destinationId: string) => {
@@ -109,11 +111,10 @@ export const DestinationsPage = () => {
         <section className="bg-gradient-to-r from-primary-600 to-primary-700 text-white py-16">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Découvrez nos Destinations
+              {t('pages:destinations.heroTitle')}
             </h1>
             <p className="text-xl text-primary-100 max-w-2xl mx-auto">
-              Explorez le monde avec nos destinations soigneusement sélectionnées.
-              Chaque voyage est une nouvelle aventure qui vous attend.
+              {t('pages:destinations.heroSubtitle')}
             </p>
           </div>
         </section>
