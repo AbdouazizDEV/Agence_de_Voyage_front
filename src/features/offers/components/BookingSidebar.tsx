@@ -3,6 +3,7 @@ import { Button } from '@common/components/ui/Button'
 import { Card } from '@common/components/ui/Card'
 import { OfferDetails } from '../types/offerDetails.types'
 import { formatCurrency } from '@common/utils/formatters'
+import { useWhatsApp } from '@features/whatsapp/hooks/useWhatsApp'
 
 interface BookingSidebarProps {
   offer: OfferDetails
@@ -13,12 +14,13 @@ interface BookingSidebarProps {
  * Sidebar de réservation avec prix et bouton WhatsApp
  */
 export const BookingSidebar = ({ offer, onWhatsApp }: BookingSidebarProps) => {
+  const { handleOfferWhatsApp } = useWhatsApp()
+
   const handleWhatsApp = () => {
     if (onWhatsApp) {
       onWhatsApp()
     } else {
-      const message = `I'm interested in ${offer.title}`
-      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank')
+      handleOfferWhatsApp(offer.id, offer.title)
     }
   }
 

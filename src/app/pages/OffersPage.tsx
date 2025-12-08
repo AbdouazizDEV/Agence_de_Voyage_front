@@ -11,6 +11,7 @@ import { Loading } from '@common/components/feedback/Loading'
 import { Error } from '@common/components/feedback/Error'
 import { Empty } from '@common/components/feedback/Empty'
 import { useOffers } from '@features/offers/hooks/useOffers'
+import { useWhatsApp } from '@features/whatsapp/hooks/useWhatsApp'
 import { OfferFilters, SortOption, SortOrder } from '@features/offers/types/offers.types'
 import { routes } from '@config/routes.config'
 import { toast } from 'sonner'
@@ -51,6 +52,7 @@ export const OffersPage = () => {
 
   // Récupérer les offres depuis l'API
   const { data, isLoading, error, refetch } = useOffers(apiParams)
+  const { handleOfferWhatsApp } = useWhatsApp()
 
   const handleApplyFilters = () => {
     setCurrentPage(1)
@@ -85,8 +87,7 @@ export const OffersPage = () => {
   const handleWhatsApp = (offerId: string) => {
     const offer = data?.data.find((o) => o.id === offerId)
     if (offer) {
-      const message = `I'm interested in ${offer.title}`
-      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank')
+      handleOfferWhatsApp(offerId, offer.title)
     }
   }
 

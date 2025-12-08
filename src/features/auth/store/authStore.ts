@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { AuthUser } from '../types/AuthUser'
-import { getAccessToken } from '../utils/tokenStorage'
+import { getAccessToken, clearTokens } from '../utils/tokenStorage'
 
 interface AuthState {
   user: AuthUser | null
@@ -23,6 +23,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   setAuthenticated: (isAuthenticated) => set({ isAuthenticated }),
   setLoading: (isLoading) => set({ isLoading }),
   logout: () => {
+    clearTokens()
     set({ user: null, isAuthenticated: false })
   },
 }))

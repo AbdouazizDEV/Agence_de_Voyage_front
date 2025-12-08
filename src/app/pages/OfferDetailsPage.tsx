@@ -9,6 +9,7 @@ import { OfferDetailsContent } from '@features/offers/components/OfferDetailsCon
 import { Loading } from '@common/components/feedback/Loading'
 import { Error } from '@common/components/feedback/Error'
 import { useOffer } from '@features/offers/hooks/useOffer'
+import { useWhatsApp } from '@features/whatsapp/hooks/useWhatsApp'
 import { routes } from '@config/routes.config'
 
 /**
@@ -18,6 +19,7 @@ export const OfferDetailsPage = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('overview')
+  const { handleOfferWhatsApp } = useWhatsApp()
 
   const { data: offer, isLoading, error, refetch } = useOffer(id)
 
@@ -56,8 +58,7 @@ export const OfferDetailsPage = () => {
   }
 
   const handleWhatsApp = () => {
-    const message = `I'm interested in ${offer.title}`
-    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank')
+    handleOfferWhatsApp(offer.id, offer.title)
   }
 
   // Construire le breadcrumb

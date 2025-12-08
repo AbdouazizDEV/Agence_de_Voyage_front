@@ -1,8 +1,10 @@
  import { Link, useNavigate } from 'react-router-dom'
-import { Plane, Globe } from 'lucide-react'
+import { Plane, Globe, LogOut, User, LayoutDashboard } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@common/components/ui/Button'
 import { Select } from '@common/components/ui/Select'
+import { useAuthStore } from '@features/auth/store/authStore'
+import { useAuth } from '@features/auth/hooks/useAuth'
 import { routes } from '@config/routes.config'
 import { cn } from '@common/utils/cn'
 
@@ -16,6 +18,8 @@ interface HeaderProps {
 export const Header = ({ className }: HeaderProps) => {
   const navigate = useNavigate()
   const { i18n, t } = useTranslation()
+  const { user, isAuthenticated } = useAuth()
+  const { logout } = useAuthStore()
 
   const languageOptions = [
     { value: 'fr', label: '🇫🇷 FR' },
@@ -24,6 +28,22 @@ export const Header = ({ className }: HeaderProps) => {
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     i18n.changeLanguage(e.target.value)
+  }
+
+  const handleLogout = () => {
+    logout()
+    navigate(routes.home)
+  }
+
+  // Construire le nom complet de l'utilisateur
+  const getUserDisplayName = () => {
+    if (!user) return ''
+    const firstName = user.first_name || ''
+    const lastName = user.last_name || ''
+    if (firstName || lastName) {
+      return `${firstName} ${lastName}`.trim()
+    }
+    return user.email
   }
 
   return (
@@ -76,15 +96,60 @@ export const Header = ({ className }: HeaderProps) => {
                 className="w-24"
               />
             </div>
-            <Button
-              variant="outline"
-              onClick={() => navigate(routes.login)}
-            >
-              {t('nav:login')}
-            </Button>
-            <Button variant="primary">
-              {t('nav:contactUs')}
-            </Button>
+
+            {isAuthenticated && user ? (
+              <>
+                {/* Informations utilisateur */}
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-md">
+                  <User className="h-4 w-4 text-gray-600" />
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-900">
+                      {getUserDisplayName()}
+                    </span>
+                    <span className="text-xs text-gray-500 capitalize">
+                      {user.role}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Bouton Dashboard pour admin */}
+                {user.role === 'admin' && (
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate(routes.admin.dashboard)}
+                    className="flex items-center gap-2"
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
+                  </Button>
+                )}
+
+                {/* Bouton Déconnexion */}
+                <Button
+                  variant="outline"
+                  onClick={handleLogout}
+                  className="flex items-center gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  {t('nav:logout')}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate(routes.login)}
+                >
+                  {t('nav:login')}
+                </Button>
+                <Button 
+                  variant="primary"
+                  onClick={() => navigate('/contact')}
+                >
+                  {t('nav:contactUs')}
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Menu mobile (hamburger) */}

@@ -5,6 +5,7 @@ import { OfferSearchCard } from './OfferSearchCard'
 import { Loading } from '@common/components/feedback/Loading'
 import { Error } from '@common/components/feedback/Error'
 import { usePopularOffers } from '../hooks/usePopularOffers'
+import { useWhatsApp } from '@features/whatsapp/hooks/useWhatsApp'
 import { routes } from '@config/routes.config'
 
 /**
@@ -13,6 +14,7 @@ import { routes } from '@config/routes.config'
 export const PopularOffers = () => {
   const navigate = useNavigate()
   const { data: offers, isLoading, error } = usePopularOffers()
+  const { handleOfferWhatsApp } = useWhatsApp()
 
   const handleViewMore = () => {
     navigate(routes.offers, {
@@ -34,8 +36,7 @@ export const PopularOffers = () => {
   const handleWhatsApp = (offerId: string) => {
     const offer = offers?.find((o) => o.id === offerId)
     if (offer) {
-      const message = `I'm interested in ${offer.title}`
-      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank')
+      handleOfferWhatsApp(offerId, offer.title)
     }
   }
 

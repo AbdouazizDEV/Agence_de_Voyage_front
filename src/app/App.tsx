@@ -13,10 +13,13 @@ import { LoginPage } from './pages/LoginPage'
 import { DestinationsPage } from './pages/DestinationsPage'
 import { AboutUsPage } from './pages/AboutUsPage'
 import { ContactUsPage } from './pages/ContactUsPage'
+import { AdminDashboardPage } from './pages/admin/AdminDashboardPage'
+import { AdminOffersPage } from './pages/admin/AdminOffersPage'
+import { AdminSettingsPage } from './pages/admin/AdminSettingsPage'
+import { AdminCategoriesPage } from './pages/admin/AdminCategoriesPage'
 
 // Pages (à créer progressivement)
 const ClientDashboard = () => <div className="p-8"><h1 className="text-2xl font-bold">Dashboard Client</h1></div>
-const AdminDashboard = () => <div className="p-8"><h1 className="text-2xl font-bold">Dashboard Admin</h1></div>
 
 /**
  * Composant principal de l'application
@@ -52,7 +55,31 @@ function App() {
             path={routes.admin.dashboard}
             element={
               <AdminRoute>
-                <AdminDashboard />
+                <AdminDashboardPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path={routes.admin.offers}
+            element={
+              <AdminRoute>
+                <AdminOffersPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path={routes.admin.settings}
+            element={
+              <AdminRoute>
+                <AdminSettingsPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path={routes.admin.categories}
+            element={
+              <AdminRoute>
+                <AdminCategoriesPage />
               </AdminRoute>
             }
           />

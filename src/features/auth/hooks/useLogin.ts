@@ -32,11 +32,14 @@ export const useLogin = (type: LoginType = 'client') => {
       if (data.user.role === 'admin') {
         navigate(routes.admin.dashboard)
       } else {
-        navigate(routes.client.dashboard)
+        // Les clients sont redirigés vers la page d'accueil
+        navigate(routes.home)
       }
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.error?.message || 'Erreur de connexion'
+    onError: (error: unknown) => {
+      const message = 
+        (error as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message || 
+        'Erreur de connexion'
       toast.error(message)
     },
   })

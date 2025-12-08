@@ -6,6 +6,7 @@ import { OfferSearchResult } from '../types/offers.types'
 import { formatCurrency } from '@common/utils/formatters'
 import { routes } from '@config/routes.config'
 import { useNavigate } from 'react-router-dom'
+import { useWhatsApp } from '@features/whatsapp/hooks/useWhatsApp'
 
 interface OfferSearchCardProps {
   offer: OfferSearchResult
@@ -22,6 +23,7 @@ export const OfferSearchCard = ({
   onWhatsApp,
 }: OfferSearchCardProps) => {
   const navigate = useNavigate()
+  const { handleOfferWhatsApp } = useWhatsApp()
 
   const handleViewDetails = () => {
     if (onViewDetails) {
@@ -35,8 +37,7 @@ export const OfferSearchCard = ({
     if (onWhatsApp) {
       onWhatsApp(offer.id)
     } else {
-      const message = `I'm interested in ${offer.title}`
-      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank')
+      handleOfferWhatsApp(offer.id, offer.title)
     }
   }
 
