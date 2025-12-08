@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Plane, LayoutDashboard, Tag, FolderTree, Settings, Plus } from 'lucide-react'
+import { Plane, LayoutDashboard, Tag, FolderTree, Settings, Plus, Home } from 'lucide-react'
 import { Button } from '@common/components/ui/Button'
 import { routes } from '@config/routes.config'
 import { cn } from '@common/utils/cn'
@@ -35,7 +35,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
       <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 flex flex-col">
         {/* Logo */}
         <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
               <Plane className="h-6 w-6 text-white" />
             </div>
@@ -44,6 +44,14 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
               <div className="text-xs text-gray-500">Back-office Panel</div>
             </div>
           </div>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => navigate(routes.home)}
+          >
+            <Home className="h-4 w-4 mr-2" />
+            Retour à l'accueil
+          </Button>
         </div>
 
         {/* Navigation */}
