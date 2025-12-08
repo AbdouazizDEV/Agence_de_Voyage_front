@@ -3,8 +3,8 @@ import { Plane, Globe, LogOut, User, LayoutDashboard } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@common/components/ui/Button'
 import { Select } from '@common/components/ui/Select'
-import { useAuthStore } from '@features/auth/store/authStore'
 import { useAuth } from '@features/auth/hooks/useAuth'
+import { useLogout } from '@features/auth/hooks/useLogout'
 import { routes } from '@config/routes.config'
 import { cn } from '@common/utils/cn'
 
@@ -19,7 +19,7 @@ export const Header = ({ className }: HeaderProps) => {
   const navigate = useNavigate()
   const { i18n, t } = useTranslation()
   const { user, isAuthenticated } = useAuth()
-  const { logout } = useAuthStore()
+  const logoutMutation = useLogout()
 
   const languageOptions = [
     { value: 'fr', label: '🇫🇷 FR' },
@@ -31,8 +31,7 @@ export const Header = ({ className }: HeaderProps) => {
   }
 
   const handleLogout = () => {
-    logout()
-    navigate(routes.home)
+    logoutMutation.mutate()
   }
 
   // Construire le nom complet de l'utilisateur
@@ -128,10 +127,11 @@ export const Header = ({ className }: HeaderProps) => {
                 <Button
                   variant="outline"
                   onClick={handleLogout}
+                  disabled={logoutMutation.isPending}
                   className="flex items-center gap-2"
                 >
                   <LogOut className="h-4 w-4" />
-                  {t('nav:logout')}
+                  {logoutMutation.isPending ? 'Déconnexion...' : t('nav:logout')}
                 </Button>
               </>
             ) : (
