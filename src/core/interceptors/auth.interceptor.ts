@@ -60,9 +60,10 @@ api.interceptors.response.use(
         }
         return api(originalRequest)
       } catch (refreshError) {
-        // Refresh échoué - déconnexion
+        // Refresh échoué - déconnexion silencieuse
         clearTokens()
-        window.location.href = '/login'
+        // Ne pas rediriger automatiquement - laisser les guards React Router gérer les redirections
+        // Cela évite les redirections inutiles sur les routes publiques
         return Promise.reject(refreshError)
       }
     }
