@@ -1,6 +1,9 @@
+import { useState, useRef, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
+import { Smile } from 'lucide-react'
 import { Button } from '@common/components/ui/Button'
 import { Input } from '@common/components/ui/Input'
 import { Card, CardHeader, CardTitle, CardContent } from '@common/components/ui/Card'
@@ -28,11 +31,15 @@ interface CategoryFormProps {
  */
 export const CategoryForm = ({ category, onSubmit, onCancel, isLoading }: CategoryFormProps) => {
   const isEditMode = !!category
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const emojiPickerRef = useRef<HTMLDivElement>(null)
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue,
   } = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
     defaultValues: category
@@ -46,6 +53,33 @@ export const CategoryForm = ({ category, onSubmit, onCancel, isLoading }: Catego
           displayOrder: 1,
         },
   })
+
+  const selectedIcon = watch('icon')
+
+  // Fermer le picker si on clique en dehors
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target as Node)
+      ) {
+        setShowEmojiPicker(false)
+      }
+    }
+
+    if (showEmojiPicker) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showEmojiPicker])
+
+  const onEmojiClick = (emojiData: EmojiClickData) => {
+    setValue('icon', emojiData.emoji, { shouldValidate: true })
+    setShowEmojiPicker(false)
+  }
 
   const onFormSubmit = (data: CategoryFormData) => {
     onSubmit(data)
@@ -95,15 +129,57 @@ export const CategoryForm = ({ category, onSubmit, onCancel, isLoading }: Catego
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Icon (Emoji)
             </label>
-            <Input
-              {...register('icon')}
-              error={errors.icon?.message}
-              placeholder="✈️"
-              maxLength={2}
-            />
+            <div className="flex gap-2">
+              <div className="flex-1 relative">
+                <div
+                  className={cn(
+                    'flex items-center justify-center w-full h-10 rounded-md border border-gray-300 bg-white px-3 cursor-pointer transition-colors hover:border-primary-500',
+                    errors.icon && 'border-red-500',
+                    !selectedIcon && 'text-gray-400'
+                  )}
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                >
+                  {selectedIcon ? (
+                    <span className="text-2xl">{selectedIcon}</span>
+                  ) : (
+                    <span className="text-sm text-gray-500">Cliquez pour choisir un emoji</span>
+                  )}
+                </div>
+                <input
+                  type="hidden"
+                  {...register('icon')}
+                />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className="px-4"
+                title="Choisir un emoji"
+              >
+                <Smile className="h-4 w-4" />
+              </Button>
+            </div>
+            {showEmojiPicker && (
+              <div ref={emojiPickerRef} className="mt-2 relative z-50">
+                <div className="absolute top-0 left-0 shadow-lg rounded-lg overflow-hidden">
+                  <EmojiPicker
+                    onEmojiClick={onEmojiClick}
+                    autoFocusSearch={false}
+                    skinTonesDisabled
+                    previewConfig={{
+                      showPreview: false,
+                    }}
+                  />
+                </div>
+              </div>
+            )}
             <p className="mt-1 text-xs text-gray-500">
-              Entrez un emoji (ex: ✈️, 🏨, 🏖️, 🎁, 🚢, 🗺️)
+              Cliquez sur le bouton smiley ou dans le champ pour choisir un emoji
             </p>
+            {errors.icon && (
+              <p className="mt-1 text-sm text-red-600">{errors.icon.message}</p>
+            )}
           </div>
 
           {/* Display Order */}
