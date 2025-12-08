@@ -50,7 +50,7 @@ export const CategoryCard = ({
             </div>
             <div className="flex items-center gap-2 ml-4">
               <Badge
-                variant={category.is_active ? 'default' : 'secondary'}
+                variant={category.is_active ? 'default' : 'default'}
                 className={cn(
                   category.is_active
                     ? 'bg-green-100 text-green-700 border-green-300'

@@ -1,7 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { X } from 'lucide-react'
 import { Button } from '@common/components/ui/Button'
 import { Input } from '@common/components/ui/Input'
 import { Card, CardHeader, CardTitle, CardContent } from '@common/components/ui/Card'

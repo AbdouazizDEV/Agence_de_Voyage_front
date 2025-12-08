@@ -6,7 +6,6 @@ import { Button } from '@common/components/ui/Button'
 import { Input } from '@common/components/ui/Input'
 import { Card, CardHeader, CardTitle, CardContent } from '@common/components/ui/Card'
 import { Select } from '@common/components/ui/Select'
-import { Toggle } from '@common/components/ui/Toggle'
 import { AdminSettings, UpdateSettingsDto } from '../api/adminSettingsApi'
 import { cn } from '@common/utils/cn'
 

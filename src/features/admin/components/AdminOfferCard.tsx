@@ -1,8 +1,7 @@
-import { Pencil, Trash2, Copy, Power } from 'lucide-react'
+import { Pencil, Trash2, Copy } from 'lucide-react'
 import { Card } from '@common/components/ui/Card'
 import { Badge } from '@common/components/ui/Badge'
 import { Button } from '@common/components/ui/Button'
-import { Toggle } from '@common/components/ui/Toggle'
 import { AdminOffer } from '../api/adminOffersApi'
 import { formatCurrency } from '@common/utils/formatters'
 import { cn } from '@common/utils/cn'
@@ -60,7 +59,7 @@ export const AdminOfferCard = ({
             </div>
             <div className="flex items-center gap-2 ml-4">
               <Badge
-                variant={offer.is_active ? 'default' : 'secondary'}
+                variant={offer.is_active ? 'default' : 'default'}
                 className={cn(
                   offer.is_active
                     ? 'bg-green-100 text-green-700 border-green-300'

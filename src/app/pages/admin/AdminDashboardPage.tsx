@@ -15,7 +15,6 @@ import {
   DollarSign,
   Calendar,
   Bell,
-  TrendingUp,
 } from 'lucide-react'
 
 /**

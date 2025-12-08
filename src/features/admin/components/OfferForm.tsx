@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { X, Upload, Image as ImageIcon } from 'lucide-react'
+import { X, Upload } from 'lucide-react'
 import { Button } from '@common/components/ui/Button'
 import { Input } from '@common/components/ui/Input'
 import { Card, CardHeader, CardTitle, CardContent } from '@common/components/ui/Card'
 import { Select } from '@common/components/ui/Select'
-import { Toggle } from '@common/components/ui/Toggle'
 import { AdminOffer, CreateOfferDto, UpdateOfferDto } from '../api/adminOffersApi'
 import { cn } from '@common/utils/cn'
 
@@ -56,7 +55,6 @@ export const OfferForm = ({ offer, onSubmit, onCancel, isLoading }: OfferFormPro
     register,
     handleSubmit,
     formState: { errors },
-    reset,
     watch,
     setValue,
   } = useForm<OfferFormData>({
